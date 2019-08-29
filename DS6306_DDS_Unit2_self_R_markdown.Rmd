@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Create a scatter plot with just the points.
 ```{r}
 # Create a scatter
+library(dplyr)
+library(ggplot2)
 mpg %>% ggplot(aes(x=hwy,y=cty))+geom_point()
 ```
 
@@ -50,4 +52,171 @@ ggplot(data = mpg) +
   geom_smooth(aes(x=hwy,y=cty,linetype=class,color=class))+
   facet_wrap(~class)
 ```
+```{r}
+mpg %>% ggplot(aes(x=hwy))+geom_histogram()
+```
+# 2.8 Bar Chart
+# Transformations
+```{r}
+mpg %>% ggplot(aes(x=class,y=..prop..,group=1))+geom_bar(stat="count")
+
+# stat="count" is default
+mpg %>% ggplot(aes(x=class))+geom_bar(stat="count")
+mpg %>% ggplot(aes(x=class))+geom_bar()
+```
+```{r}
+# Error will pop up for below command
+# mpg %>% ggplot(aes(x=class,y=cty))+geom_bar()
+# "Error: stat_count() must not be used with a y aesthetic"
+
+# Fix: Add stat="identity" to add the values of the y value per class (x level)
+mpg %>% ggplot(aes(x=class,y=cty))+geom_bar(stat = "identity")
+
+mpg %>% ggplot(aes(x=class,y=cty))+geom_bar(stat = "identity") + facet_wrap(~class)
+```
+# Position={Stack, Fill, Dodge}
+```{r}
+# position="stack" is default
+mpg %>% ggplot(aes(x=class))+geom_bar()
+mpg %>% ggplot(aes(x=class,fill=drv))+geom_bar()
+mpg %>% ggplot(aes(x=class,fill=drv))+geom_bar(position="stack")
+mpg %>% ggplot(aes(x=class,fill=drv))+geom_bar(position="dodge")
+mpg %>% ggplot(aes(x=class,fill=drv))+geom_bar(position="fill")
+```
+# Scatterplot
+# Position = jitter
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty))+geom_point()
+mpg %>% ggplot(aes(x=hwy,y=cty))+geom_point(position = "jitter")
+```
+# 2.9 Other Coordinate System
+# coord_flip(), coord_polar()
+```{r}
+mpg %>% ggplot(aes(x=class,fill=drv))+geom_bar()
+mpg %>% ggplot(aes(x=class,fill=drv))+geom_bar()+coord_flip()
+mpg %>% ggplot(aes(x=class,fill=drv))+geom_bar()+coord_polar()
+```
+
+# US Maps
+```{r}
+#install.package("maps)
+#library(maps)
+usa = map_data("usa")
+#US map
+p <- ggplot()+geom_polygon(data=usa,aes(x=long,y=lat,group=group),fill="blue",color="black")+coord_quickmap()
+#Dallas Coords
+Dallas <- tibble(long=c(-96.7970),lat=c(32.7767),names=c("Dallas"))
+#US map with Dallas city mark added
+p + geom_point(data = Dallas,aes(x=long,y=lat),shape=21,fill="yellow",color="black",size=5) +
+  geom_text(data=Dallas,aes(x=long,y=lat,label=names),hjust=0,nudge_x = 1,color="white")
+```
+# World map
+```{r}
+world=map_data("world")
+ggplot(world,aes(long,lat,group=group)) +
+  geom_polygon(fill="white",color="black") +
+  coord_quickmap()
+```
+# World2 map
+```{r}
+world2=map_data("world2")
+ggplot(world2,aes(long,lat,group=group)) +
+  geom_polygon(fill="white",color="black") +
+  coord_quickmap()
+```
+
+# Italy Map
+```{r}
+italy=map_data("italy")
+ggplot(italy,aes(long,lat,group=group)) +
+  geom_polygon(fill="white",color="black") +
+  coord_quickmap()
+```
+# France Map
+```{r}
+france=map_data("france")
+ggplot(france,aes(long,lat,group=group)) +
+  geom_polygon(fill="white",color="black") +
+  coord_quickmap()
+```
+# US state map
+```{r}
+state=map_data("state")
+ggplot(state,aes(long,lat,group=group)) +
+  geom_polygon(fill="white",color="black") +
+  coord_quickmap()
+```
+# US county map
+```{r}
+county=map_data("county")
+ggplot(county,aes(long,lat,group=group)) +
+  geom_polygon(fill="white",color="black") +
+  coord_quickmap()
+```
+
+# New Zealand map
+```{r}
+nz=map_data("nz")
+ggplot(nz,aes(long,lat,group=group)) +
+  geom_polygon(fill="white",color="black") +
+  coord_quickmap()
+```
+
+# 2.10 Themes
+# Excel
+```{r}
+# install.packages("ggthemes")
+library(ggthemes)
+mpg %>% ggplot(aes(x=hwy,y=cty)) + 
+  geom_point(position = "jitter") + 
+  ggtitle("City MPG v. Highway MPG") + 
+  theme_excel()
+mpg %>% ggplot(aes(x=class,fill=class)) + geom_bar()+theme_excel()
+```
+# The Economist
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty)) + 
+  geom_point(position = "jitter") + 
+  ggtitle("City MPG v. Highway MPG") + 
+  theme_economist()
+mpg %>% ggplot(aes(x=class,fill=class)) + geom_bar()+theme_economist()
+```
+# classic
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty)) + 
+  geom_point(position = "jitter") + 
+  ggtitle("City MPG v. Highway MPG") + 
+  theme_classic()
+mpg %>% ggplot(aes(x=class,fill=class)) + geom_bar()+theme_classic()
+```
+# wsj - Wall Street Journal
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty)) + 
+  geom_point(position = "jitter") + 
+  ggtitle("City MPG v. Highway MPG") + 
+  theme_wsj()
+mpg %>% ggplot(aes(x=class,fill=class)) + geom_bar()+theme_wsj()
+```
+# pander
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty)) + 
+  geom_point(position = "jitter") + 
+  ggtitle("City MPG v. Highway MPG") + 
+  theme_pander()
+mpg %>% ggplot(aes(x=class,fill=class)) + geom_bar()+theme_pander()
+```
+# fivethirtyeight
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty)) + 
+  geom_point(position = "jitter") + 
+  ggtitle("City MPG v. Highway MPG") + 
+  theme_fivethirtyeight()
+mpg %>% ggplot(aes(x=class,fill=class)) + geom_bar()+theme_fivethirtyeight()
+```
+# Additional Theme Resources!
+# http://www.sthda.com/english/wiki/ggplot2-thethemes-and-background-colors-the-3-elements
+# https://jrnold.github.io/ggthemes/
+# https://www.r-bloggers.com/custom-themes-in-ggplot2/
+# https://cran.r-project.org/web/packages/ggthemes/ggthemes/pdf
+
 
