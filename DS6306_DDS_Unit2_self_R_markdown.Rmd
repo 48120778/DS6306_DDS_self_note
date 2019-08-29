@@ -1,0 +1,19 @@
+---
+title: "DS6306_DDS_Unit2_Self_Note"
+author: "Hao Wang"
+date: "8/29/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty))+geom_point()
+```
+
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty))+geom_smooth()
+```
+
