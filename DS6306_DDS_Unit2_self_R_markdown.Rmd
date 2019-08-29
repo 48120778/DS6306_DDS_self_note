@@ -12,8 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 mpg %>% ggplot(aes(x=hwy,y=cty))+geom_point()
 ```
-
 ```{r}
 mpg %>% ggplot(aes(x=hwy,y=cty))+geom_smooth()
+```
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty,linetype=drv))+geom_smooth()
 ```
 
