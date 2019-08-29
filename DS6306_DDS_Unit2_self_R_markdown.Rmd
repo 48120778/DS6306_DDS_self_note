@@ -9,13 +9,38 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Goal: Assess if there is evidence that the relationship between city and highway mpg
+# is different based on the drive of the car (4 wheel, front or rear.)
+## Create a scatter plot with just the points.
 ```{r}
+# Create a scatter
 mpg %>% ggplot(aes(x=hwy,y=cty))+geom_point()
 ```
+
+## Create a plot with just the smoothed line.
 ```{r}
 mpg %>% ggplot(aes(x=hwy,y=cty))+geom_smooth()
 ```
+
+## Create a plot that has a different line for each level of drive (drv).
 ```{r}
 mpg %>% ggplot(aes(x=hwy,y=cty,linetype=drv))+geom_smooth()
 ```
+
+## Create a plot that has the smoothed line and the points and designate 
+## the type of drive by color... in both the line and the points.
+```{r}
+#Global aes() ... one aes that applies to all layers
+mpg %>% ggplot(aes(x=hwy,y=cty,linetype=drv,color=drv))+geom_smooth()+geom_point()
+```
+
+## Create a plot that has the points and the smoothed line but the color
+## designates the class of the car and the lines are diffentiated by the drive variable.
+```{r}
+#Individual aes() ... an aesthetic for each layer
+ggplot(data = mpg) +
+  geom_point(aes(x=hwy,y=cty,color=class))+
+  geom_smooth(aes(x=hwy,y=cty,linetype=drv,color=drv))
+```
+
 
