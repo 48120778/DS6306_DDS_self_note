@@ -8,17 +8,52 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+# 2.2 Scatterplots, Histograms, Boxplots, Barcharts
 # Goal: Assess if there is evidence that the relationship between city and highway mpg
 # is different based on the drive of the car (4 wheel, front or rear.)
-## Create a scatter plot with just the points.
 ```{r}
-# Create a scatter
 library(dplyr)
 library(ggplot2)
+
+# Scatterplots
 mpg %>% ggplot(aes(x=hwy,y=cty))+geom_point()
+
+# Histograms
+mpg %>% ggplot(aes(x=cty))+geom_histogram()
+
+# Boxplot
+mpg %>% ggplot(aes(x=class,y=cty))+geom_boxplot()
+
+# Barchart
+mpg %>% ggplot(aes(x=class))+geom_bar()
+```
+# 2.4 Mapping | Aesthetics (color=)
+# Scatterplots (color=)
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty,color=mpg$drv)) + geom_point()
+mpg %>% ggplot(aes(x=hwy,y=cty)) + geom_point(color="blue")
+```
+# Histograms (color=)
+```{r}
+ggplot(data = mpg[mpg$class=="compact",],aes(x=cty,fill=drv)) + geom_histogram(color="black")
+ggplot(data = mpg[mpg$class=="compact",],aes(x=cty)) + geom_histogram(fill="blue",color="black")
+```
+# Boxplot (color=)
+```{r}
+mpg %>% ggplot(aes(x=class,y=cty,fill=drv)) + geom_boxplot(color="blue")
+mpg %>% ggplot(aes(x=class,y=cty)) + geom_boxplot(fill="black",color="blue")
 ```
 
+
+# 2.4 Mapping | Aesthetics (size=, alpha=, shape=)
+```{r}
+mpg %>% ggplot(aes(x=hwy,y=cty,size=mpg$displ))+geom_point()
+mpg %>% ggplot(aes(x=hwy,y=cty,alpha=mpg$displ))+geom_point()
+mpg %>% ggplot(aes(x=hwy,y=cty,shape=mpg$drv))+geom_point()
+```
+
+
+# 2.5 Geometric Objects (geoms)
 ## Create a plot with just the smoothed line.
 ```{r}
 mpg %>% ggplot(aes(x=hwy,y=cty))+geom_smooth()
@@ -44,7 +79,17 @@ ggplot(data = mpg) +
   geom_point(aes(x=hwy,y=cty,color=class))+
   geom_smooth(aes(x=hwy,y=cty,linetype=drv,color=drv))
 ```
+# 2.6 Label
+```{r}
+mpg %>% ggplot(aes(x=class,y=cty)) +
+  geom_boxplot() +
+  ggtitle("Boxplot of ...") +
+  xlab("Class") +
+  ylab("City MPG")
+```
 
+
+# 2.7 Facet
 ```{r}
 #Individual aes() ... an aesthetic for each layer
 ggplot(data = mpg) +
@@ -219,4 +264,45 @@ mpg %>% ggplot(aes(x=class,fill=class)) + geom_bar()+theme_fivethirtyeight()
 # https://www.r-bloggers.com/custom-themes-in-ggplot2/
 # https://cran.r-project.org/web/packages/ggthemes/ggthemes/pdf
 
+# 2.11 Interactive and 3-D Plots | Plotly
+# Week 2 Visualization | ggplot2, plotly
+# Interactive Plots | plotly
+```{r}
+# install.packages("plotly")
+library(ggthemes)
+library(plotly)
+
+p = mpg %>%
+  ggplot(aes(x=hwy,y=cty)) +
+  geom_point(position="jitter") + ggtitle("City MPG v. Highway MPG") + theme_excel()
+
+ggplotly()
+```
+
+```{r}
+p = mpg[mpg$class=="compact",] %>%
+  ggplot(aes(x=cty,fill=drv)) +
+  geom_histogram(color="blue")
+
+ggplotly()
+```
+
+Student Data
+```{r}
+#generate the data
+age <- c(22,21,24,19,20,23)
+yrs_math_ed <- c(4,5,2,5,3,5)
+names <- c("Mary","Martha","Kim","Kristen","Amy","Sam")
+subject <- c("English","Math","Socialogy","Math","Music","Dance")
+df3 <- data.frame(Age=age, Years=yrs_math_ed, Name=names, Subject=subject)
+
+#plotting code
+p <- df3 %>%
+  ggplot(aes(x=Name,y=Years)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Distribution of Class")
+
+#enabling interactive piece
+ggplotly(p)
+```
 
