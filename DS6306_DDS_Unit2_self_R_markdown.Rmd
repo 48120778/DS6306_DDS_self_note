@@ -328,10 +328,3 @@ p1 <- plot_ly(iris,x=~Sepal.Width,y=~Sepal.Length,z=~Petal.Width,color = ~Specie
 p1
 ```
 
-```{r}
-p = mpg %>%
-ggplot(mapping = aes(x = hwy, y = cty)) + 
-geom_point(position = "jitter") + ggtitle("City MPG v. Highway MPG") + theme_excel()
-ggplotly(p)
-```
-
