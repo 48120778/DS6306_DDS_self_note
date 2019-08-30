@@ -145,9 +145,10 @@ mpg %>% ggplot(aes(x=class,fill=drv))+geom_bar()+coord_polar()
 # US Maps
 ```{r}
 #install.package("maps)
-#library(maps)
-usa = map_data("usa")
+library(maps)
+
 #US map
+usa = map_data("usa")
 p <- ggplot()+geom_polygon(data=usa,aes(x=long,y=lat,group=group),fill="blue",color="black")+coord_quickmap()
 #Dallas Coords
 Dallas <- tibble(long=c(-96.7970),lat=c(32.7767),names=c("Dallas"))
@@ -155,6 +156,7 @@ Dallas <- tibble(long=c(-96.7970),lat=c(32.7767),names=c("Dallas"))
 p + geom_point(data = Dallas,aes(x=long,y=lat),shape=21,fill="yellow",color="black",size=5) +
   geom_text(data=Dallas,aes(x=long,y=lat,label=names),hjust=0,nudge_x = 1,color="white")
 ```
+
 # World map
 ```{r}
 world=map_data("world")
@@ -257,15 +259,15 @@ mpg %>% ggplot(aes(x=hwy,y=cty)) +
   ggtitle("City MPG v. Highway MPG") + 
   theme_fivethirtyeight()
 mpg %>% ggplot(aes(x=class,fill=class)) + geom_bar()+theme_fivethirtyeight()
-```
+
 # Additional Theme Resources!
 # http://www.sthda.com/english/wiki/ggplot2-thethemes-and-background-colors-the-3-elements
 # https://jrnold.github.io/ggthemes/
 # https://www.r-bloggers.com/custom-themes-in-ggplot2/
 # https://cran.r-project.org/web/packages/ggthemes/ggthemes/pdf
+```
 
 # 2.11 Interactive and 3-D Plots | Plotly
-# Week 2 Visualization | ggplot2, plotly
 # Interactive Plots | plotly
 ```{r}
 # install.packages("plotly")
@@ -303,6 +305,33 @@ p <- df3 %>%
   ggtitle("Distribution of Class")
 
 #enabling interactive piece
+ggplotly(p)
+```
+
+# 3D Plots | plotly
+```{r}
+#mpg
+p <- plot_ly(mpg,x=~cty,y=~hwy,z=~displ,color=~drv) %>%
+  add_markers() %>%
+  layout(scene=list(xaxis=list(title='City MPG'),
+                    yaxis=list(title='Displacement'),
+                    zaxis=list(title='Highway MPG')))
+p
+```
+```{r}
+#Iris
+p1 <- plot_ly(iris,x=~Sepal.Width,y=~Sepal.Length,z=~Petal.Width,color = ~Species) %>%
+  add_markers() %>%
+  layout(scene=list(xaxis=list(title='Sepal Width'),
+                    yaxis=list(title='Sepal Length'),
+                    zaxis=list(title='Petal Width')))
+p1
+```
+
+```{r}
+p = mpg %>%
+ggplot(mapping = aes(x = hwy, y = cty)) + 
+geom_point(position = "jitter") + ggtitle("City MPG v. Highway MPG") + theme_excel()
 ggplotly(p)
 ```
 
