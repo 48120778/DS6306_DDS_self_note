@@ -2,8 +2,14 @@
 title: "DS6306_DDS_Unit2_Self_Note"
 author: "Hao Wang"
 date: "8/29/2019"
-output: html_document
+always_allow_html: yes
+output:
+  pdf_document: default
+  html_document: default
 ---
+```{r,include=FALSE}
+options(tinytex.verbose=TRUE)
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -326,5 +332,121 @@ p1 <- plot_ly(iris,x=~Sepal.Width,y=~Sepal.Length,z=~Petal.Width,color = ~Specie
                     yaxis=list(title='Sepal Length'),
                     zaxis=list(title='Petal Width')))
 p1
+```
+
+#Unit2 Assignment
+#1.Use the PlayerBBall.csv dataset to visually represent (summarize) the number of players in each position.
+```{r}
+d <- read.csv(file = "C:/Edu/Git/MDS-6306-Doing-Data-Science-Fall-2019/Unit 2/PlayersBBall.csv")
+library(plotly)
+p1 <- d %>% ggplot(aes(x=position))+geom_bar(fill="blue",color="black") + xlab("Position") + ylab("Count") +
+  ggtitle("Number of Players In Each Position") + theme_pander()
+p2 <- d %>% ggplot(aes(x=position,y=..prop..,group=1))+geom_bar(fill="blue",color="black") + xlab("Position") + ylab("Proportion") +
+  ggtitle("Propotion of Players In Each Position") + theme_pander()
+ggplotly(p1)
+ggplotly(p2)
+```
+#2. Weight of C vs. F
+```{r}
+d2 <- d[d$position=="C"|d$position=="F",]
+p <- ggplot(data=d2,aes(x=position,y=weight)) + geom_boxplot() + ggtitle("Weight of C vs. F")
+ggplotly(p)
+```
+#3. Height of C vs. F
+```{r}
+d3 <- d[d$position=="C"|d$position=="F",]
+p <- ggplot(data=d2,aes(x=position,y=height)) + geom_boxplot() + ggtitle("Height of C vs. F")
+ggplotly(p)
+```
+#4. Height between any of the positions.
+```{r}
+p <- ggplot(data=d,aes(x=position,y=height)) + geom_boxplot() + ggtitle("Height of Any Position")
+ggplotly(p)
+```
+#5 Height vs. Weight
+```{r}
+d %>% ggplot(aes(x=weight,y=height,color=position)) + geom_point()
+d %>% ggplot(aes(x=weight,y=height,color=position)) + geom_point(position="jitter")
+d %>% ggplot(aes(x=weight,y=height,linetype=position,color=position)) + geom_smooth()
+```
+#6 Height vs. Weight vs. Position
+```{r}
+d %>% ggplot(aes(x=weight,y=height,color=position)) + geom_point(position="jitter") +
+  facet_wrap(~position)
+```
+#7 Height vs. Years
+```{r}
+d %>% ggplot(aes(x=year_start,y=height,color=position)) + geom_point(position="jitter") + ggtitle("Height vs. Years")
+```
+#8 3D plot of Height vs. Weight vs. Year and color code the points by position
+```{r}
+p <- plot_ly(d,x=~weight,y=~height,z=~year_start,color=~position) %>%
+  add_markers() %>%
+  layout(scene=list(xaxis=list(title='Weight'),
+                    yaxis=list(title='Height'),
+                    zaxis=list(title='Position')))
+p
+```
+#9 Treemap visualization
+```{r}
+# Theme example from: https://rpubs.com/brandonkopp/creating-a-treemap-in-r
+library(ggplot2) 
+library(treemap)
+library(xtable)
+library(dplyr)
+outlays <- read.csv(file = "C:/Edu/GitHub_DDS/Unit 2/DS6306_DDS_self_note/outlays_new-fy2020.csv",stringsAsFactors = FALSE)
+
+#Remove commas from numeric values in number columns
+#$X2017 <- gsub(",","", outlays$X2017)
+
+#Convert numeric columns to a numeric data type
+outlays$X2017 <- as.numeric(outlays$X2017)
+
+#Create new data frame for positive (spending) values
+spending <- outlays %>% select(Agency.Name, Bureau.Name, Account.Name, X2017) %>%
+  group_by(Agency.Name, Bureau.Name, Account.Name) %>%
+  summarize(X2017 = sum(X2017, na.rm=FALSE)) %>%
+  filter(X2017 > 0)
+
+#Create new data frame for negative (income) values
+receipts <- outlays %>% select(Agency.Name, Bureau.Name, Account.Name, X2017) %>%
+  group_by(Agency.Name, Bureau.Name, Account.Name) %>%
+  summarize(X2017 = sum(X2017, na.rm=FALSE)) %>%
+  filter(X2017 < 0) %>%
+  mutate(X2017 = abs(X2017))
+
+treemap(spending, #Your data frame object
+        index=c("Agency.Name","Bureau.Name","Account.Name"),  #A list of your categorical variables
+        vSize = "X2017",  #This is your quantitative variable
+        type="index", #Type sets the organization and color scheme of your treemap
+        palette = "Reds",  #Select your color palette from the RColorBrewer presets or make your own.
+        title="Spending in President Obama's 2017 Budget", #Customize your title
+        fontsize.title = 14 #Change the font size of the title
+        )
+
+```
+
+```{r}
+treemap(receipts, #Your data frame object
+        index=c("Agency.Name","Bureau.Name","Account.Name"),  #A list of your categorical variables
+        vSize = "X2017",  #This is your quantitative variable
+        type="index", #Type sets the organization and color scheme of your treemap
+        palette = "Greens",  #Select your color palette from the RColorBrewer presets or make your own.
+        title="Receipts in President Obama's 2017 Budget", #Customize your title
+        fontsize.title = 14 #Change the font size of the title
+        )
+```
+# 10 EducationIncome.csv dataset analysis
+```{r}
+# url <- "https://github.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/blob/master/Unit%202/Education_Income.csv"
+# eduincome <- read.csv(url, stringsAsFactors = FALSE)
+eduincome <- read.csv(file = "C:/Edu/Git/MDS-6306-Doing-Data-Science-Fall-2019/Unit 2/Education_Income.csv")
+p <- eduincome %>% ggplot(aes(x=Educ,y=Income2005)) + geom_boxplot() + xlim("<12","12","13-15","16",">16")+ ylim(0e+00,3e+05) + ggtitle("Income Increase vs. Education Level Rises") + xlab("Education Year") + ylab("Income 2005") + coord_flip()
+ggplotly(p)
+```
+#11 Question
+```{r}
+url <- "https://github.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/blob/master/Unit%202/Education_Income.csv"
+d <- read.csv(url, quote="",row.name=NULL,stringsAsFactors = FALSE)
 ```
 
